@@ -129,6 +129,152 @@ HAVING COUNT(*) >1;
 -- No duplicates were found.
 
 -- Standardizatiom
-SELECT customer_id,phone
+UPDATE customers_clean
+SET
+	first_name=TRIM(first_name),
+    last_name=TRIM(last_name),
+    street=TRIM(street),
+    city=TRIM(city),
+    state=TRIM(state),
+    zip_code=TRIM(zip_code)
+;
+
+UPDATE customers_clean
+SET email = LOWER(email);
+
+UPDATE customers_clean
+SET phone=REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(phone,'_',''),'(',''),')',''),'-',''),' ','');
+
+SELECT *
 FROM customers_clean;
+
+SELECT *
+FROM products_clean;
+
+SELECT product_name
+FROM products
+WHERE product_name LIKE '%  %';
+
+SELECT *
+FROM staffs_clean;
+
+UPDATE staffs_clean
+SET
+	first_name=TRIM(first_name),
+    last_name=TRIM(last_name),
+    email=TRIM(email)
+    ;
+
+UPDATE staffs_clean
+SET phone=REPLACE(REPLACE(REPLACE(REPLACE(phone,'(',''),')',''),'-',''),' ','');
+    
+    -- Verify data types
+SELECT *
+FROM orders_clean;
+
+DESCRIBE orders_clean;
+
+ALTER TABLE orders_clean
+MODIFY order_date DATE,
+MODIFY required_date DATE,
+MODIFY shipped_date DATE;
+
+
+-- Looking for inconsistent categories
+SELECT DISTINCT state
+FROM customers_clean
+ORDER BY state;
+
+SELECT DISTINCT product_name,COUNT(*)
+FROM products_clean
+GROUP BY product_name
+ORDER BY COUNT(*) DESC;
+
+-- No inconsistnet categories were found
+
+-- Handle null values
+
+SELECT *
+FROM customers_clean;
+
+SELECT
+	SUM(customer_id IS NULL) AS customer_id_nulls,
+    SUM(first_name IS NULL) AS first_name_nulls,
+    SUM(last_name IS NULL) AS last_name_nulls,
+    SUM(phone IS NULL OR phone = '') AS phone_nulls,
+    SUM(email IS NULL) AS email_nulls,
+    SUM(street IS NULL) AS street_nulls,
+    SUM(city IS NULL) AS city_nulls,
+    SUM(state IS NULL) AS state_nulls,
+    SUM(zip_code IS NULL) AS zip_code_nulls
+FROM customers_clean;
+
+UPDATE customers_clean
+SET phone='Unknown'
+WHERE phone IS NULL;
+
+-- 1297 null values on phone column.Left as unknown since phone numbers are optional.
+
+SELECT 
+	SUM(order_id IS NULL ) AS order_id_nulls,
+    SUM(item_id IS NULL) AS item_id_nulls,
+    SUM(product_id IS NULL) AS product_id_nulls,
+    SUM(quantity IS NULL)AS quantity_nulls,
+    SUM(list_price IS NULL) AS list_price_nulls,
+    SUM(discount IS NULL) AS discount_nulls
+FROM order_items_clean
+;
+
+SELECT*
+FROM orders_clean;
+
+SELECT
+	SUM(order_id IS NULL) AS order_id_nulls,
+	SUM(customer_id IS NULL) AS customer_id_nulls,
+    SUM(order_status IS NULL) AS order_status_nulls,
+    SUM(order_date IS NULL) AS order_date_nulls,
+    SUM(required_date IS NULL) AS required_date_nulls,
+    SUM(shipped_date IS NULL) AS shipped_date_nulls,
+    SUM(store_id IS NULL) AS store_id_nulls,
+    SUM(staff_id IS NULL) AS staff_id_nulls
+FROM orders_clean;
+
+-- Shipped date has 170 null values meaning 170 orders have not yet been shipped.
+
+SELECT *
+FROM products_clean;
+    
+SELECT 
+	SUM(product_id IS NULL) AS product_id_nulls,
+	SUM(product_name IS NULL) AS product_name_nulls,
+	SUM(brand_id IS NULL) AS brand_id_nulls,
+ 	SUM(category_id IS NULL) AS category_id_nulls,
+    SUM(model_year IS NULL) AS model_year_nulls,
+    SUM(list_price IS NULL) AS list_price_nulls
+FROM products_clean;
+
+-- No null values were found in the products tables 
+SELECT 
+	SUM(staff_id IS NULL) AS staff_id_nulls,
+    SUM(first_name IS NULL) AS first_name_nulls,
+    SUM(last_name IS NULL) AS last_name_nulls,
+    SUM(phone IS NULL OR phone = '') AS phone_nulls,
+    SUM(email IS NULL) AS email_nulls,
+    SUM(active IS NULL) AS active_nulls,
+    SUM(store_id IS NULL) AS store_id_nulls
+FROM staffs_clean;
+    
+-- No null values were foun in the staff table
+
+SELECT 
+	SUM(store_id IS NULL) AS store_id_nulls,
+    SUM(product_id IS NULL) AS product_id_nulls,
+    SUM(quantity IS NULL) AS quantity_nulls
+FROM stocks_clean;
+
+-- No null values in the stocks table.
+
+
+    
+    
 
