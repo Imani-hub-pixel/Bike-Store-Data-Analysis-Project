@@ -261,11 +261,13 @@ SELECT
     SUM(phone IS NULL OR phone = '') AS phone_nulls,
     SUM(email IS NULL) AS email_nulls,
     SUM(active IS NULL) AS active_nulls,
-    SUM(store_id IS NULL) AS store_id_nulls
+    SUM(store_id IS NULL) AS store_id_nulls,
+    SUM(manager_id IS NULL) AS manager_id_nulls
 FROM staffs_clean;
-    
--- No null values were foun in the staff table
 
+-- One NULL manager_id was retained because the correct manager
+-- could not be determined from the available data.
+    
 SELECT 
 	SUM(store_id IS NULL) AS store_id_nulls,
     SUM(product_id IS NULL) AS product_id_nulls,
@@ -275,6 +277,28 @@ FROM stocks_clean;
 -- No null values in the stocks table.
 
 
-    
-    
+-- Removing unecessary rows and columns
+
+-- Removed phone column because it was not relevant to the sales analysis
+-- and contained a high proportion of NULL values.
+
+ALTER TABLE customers_clean
+DROP COLUMN phone;
+
+-- Removed  street, and zip_code columns because they were
+-- not required for the planned sales analysis.    
+
+ALTER TABLE customers_clean
+DROP COLUMN street;
+
+ALTER TABLE customers_clean
+DROP COLUMN zip_code;
+
+SELECT *
+FROM staffs_clean;
+
+
+
+
+
 
