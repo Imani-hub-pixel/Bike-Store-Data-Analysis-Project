@@ -43,3 +43,30 @@ GROUP BY stage
 ORDER BY 2 DESC;
 
 
+SELECT industry,SUM(total_laid_off)
+FROM layoffs_drafting2
+GROUP BY industry
+ORDER BY 2 DESC;
+
+-- rolling um of layoffs
+
+
+SELECT SUBSTRING(`date`,1,7) AS `year_month` ,SUM(total_laid_off)
+FROM layoffs_drafting2
+WHERE  SUBSTRING(`date`,1,7) IS NOT NULL
+GROUP BY `year_month`
+ORDER BY 1 DESC;
+
+WITH Rolling_Total AS
+(
+SELECT SUBSTRING(`date`,1,7) AS `year_month` ,SUM(total_laid_off) AS total_off
+FROM layoffs_drafting2
+WHERE  SUBSTRING(`date`,1,7) IS NOT NULL
+GROUP BY `year_month`
+ORDER BY 1 DESC
+)
+SELECT `year_month`,total_off ,SUM(total_off) OVER(ORDER BY `year_month`) AS rolling_case
+FROM Rolling_Total;
+
+
+
